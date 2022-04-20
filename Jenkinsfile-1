@@ -13,5 +13,15 @@ pipeline {
         sh 'pip install -r requirements.txt'
       }
     }
+    stage('Test'){
+      steps {
+         sh 'echo 'Test Stage executed''
+      }
+    }
+    stage('Acceptance-Deploy') {
+      steps {
+      sh 'echo 'Acceptance Deploy executed''
+      }
+    }
   }
 }
