@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker { 
     image 'aws-pip1' 
-    args '-u root -v ~/.aws:/root/.aws:ro --network="host"'
+    args '-u root -v /home/prashant/.aws:/root/.aws:ro --network="host"'
     }
   }
   stages {
