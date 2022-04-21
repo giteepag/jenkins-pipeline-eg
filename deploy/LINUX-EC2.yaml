@@ -1,0 +1,106 @@
+#Author Prashant
+#Version 1.5
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: VPC Nested Stack Template
+
+Parameters:
+  VpcBlock:
+    Type: String
+    Default: 20.0.0.0/16
+    Description: VPC CIDR Range
+  Subnet01Block:
+    Type: String
+    Default: 20.0.1.0/24
+    Description: Subnet01 for EC2 Instances
+  MyAvailabilityZone:
+    Type: String
+    Default: us-east-1a
+    AllowedValues:
+      - us-east-1a
+      - us-east-1b
+  MyKeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: giteepag-keypair
+  
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcBlock
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value:  !Join ['', [!Ref "AWS::StackName", "-VPC" ]]
+  MySubnet01:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: !Ref Subnet01Block
+      VpcId: !Ref MyVPC
+      AvailabilityZone: !Ref MyAvailabilityZone
+      MapPublicIpOnLaunch: true
+      Tags:
+       - Key: Name
+         Value:  !Join ['', [!Ref "AWS::StackName", "-Subnet01" ]]  
+  MyRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Join ['', [!Ref "AWS::StackName", "-RouteTable" ]]
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref MyInternetGateway
+      VpcId: !Ref MyVPC  
+  
+  MyInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Join ['', [!Ref "AWS::StackName", "-InternetGateway" ]]
+
+  MyRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+       RouteTableId: !Ref MyRouteTable
+       DestinationCidrBlock: 0.0.0.0/0
+       GatewayId: !Ref MyInternetGateway
+
+
+  MyPublicRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref MyRouteTable
+      SubnetId: !Ref MySubnet01
+
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for MY EC2 Instance.
+      GroupName: MySG
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref MyVPC
+  MyVMInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+       ImageId:  ami-061ac2e015473fbe2
+       InstanceType: t2.micro
+       SecurityGroupIds: 
+        - !Ref MySecurityGroup
+       SubnetId: !Ref MySubnet01
+       AvailabilityZone: !Ref MyAvailabilityZone
+       KeyName: !Ref MyKeyName
