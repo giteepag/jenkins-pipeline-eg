@@ -18,7 +18,8 @@ pipeline {
     }
     stage('Acceptance-Deploy') {
       steps {
-      cfn-create-update() 
+	cd
+      	./cfn-create-update.sh 
       }
     }
   }
