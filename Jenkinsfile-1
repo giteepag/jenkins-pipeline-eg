@@ -18,6 +18,7 @@ pipeline {
     }
     stage('Acceptance-Deploy') {
       steps {
+        sh "chmod +x -R ${env.WORKSPACE}"
 	sh './cfn-create-update.sh'
       }
     }
