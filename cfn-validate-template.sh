@@ -1,6 +1,6 @@
 #/bin/bash
 
-api_region="us-east-01"
+api_region="us-east-1"
 file='/var/lib/jenkins/workspace/jenkins-test/deploy/LINUX-EC2.yaml'
 
 #Check if templates have syntax error
