@@ -8,8 +8,6 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'aws --version'
-        sh 'aws s3 ls'
         sh 'pip install -r requirements.txt'
       }
     }
@@ -20,7 +18,7 @@ pipeline {
     }
     stage('Acceptance-Deploy') {
       steps {
-      echo 'Acceptance Deploy executed'
+      cfn-create-update() 
       }
     }
   }
