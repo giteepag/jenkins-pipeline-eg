@@ -12,7 +12,7 @@ else
     type_formation='update-stack'
 fi
 
-file='${env.WORKSPACE}/deploy/LINUX-EC2.yaml'
+file='/var/lib/jenkins/workspace/jenkins-test/deploy/LINUX-EC2.yaml'
 
 echo "======================================== Creating/Updating the stack "
 eval "aws --region $api_region cloudformation $type_formation --stack-name $api_stack_name --template-body 'file://$file'"
