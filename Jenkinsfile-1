@@ -13,7 +13,8 @@ pipeline {
     }
     stage('Test'){
       steps {
-        echo 'Test Stage executed'
+        sh "chmod +x -R ${env.WORKSPACE}"
+	sh './cfn-validate-template.sh'
       }
     }
     stage('Acceptance-Deploy') {
